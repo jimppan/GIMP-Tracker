@@ -365,8 +365,8 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         connectButton = new JButton("Connect");
         connectButton.addActionListener(this);
 
-        debugButton = new JButton("Debug");
-        debugButton.addActionListener(this);
+        //debugButton = new JButton("Debug");
+        //debugButton.addActionListener(this);
 
         connectButtonLabel = new JLabel("");
 
