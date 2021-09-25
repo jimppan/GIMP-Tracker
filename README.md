@@ -29,7 +29,7 @@ On the right hand side of runelite, there will be a panel available to manually 
 
 ## Special thanks to
 
-- Adam @ Runelite for answering some crucial questions 
+- Adam & Alexsuperfly @ Runelite for answering some crucial questions 
 - Mejrs for helping out with extracting map images
 - PH01L for having a ton of useful information on his site https://www.osrsbox.com/
 
