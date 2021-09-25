@@ -13,6 +13,8 @@ Once you have an endpoint to connect to with the plugin, head over to the GIMP T
 ![alt text](https://i.imgur.com/P5zylDq.png)
 ![alt text](https://i.imgur.com/a0x6Wi7.png)
 
+Head over to [https://github.com/Rachnus/osrs-gimp-tracker-frontend](https://github.com/Rachnus/osrs-gimp-tracker-frontend) to see instructions on how to use the website
+
 ## Settings
 Heres a couple settings
 * URL: should be the IP & PORT to the back-end
@@ -25,7 +27,6 @@ Heres a couple settings
 On the right hand side of runelite, there will be a panel available to manually connect/disconnect to the backend, it will also display your last known connection status, if there was an issue
 
 ![alt text](https://i.imgur.com/9It7uoE.png)
-
 
 ## Special thanks to
 
