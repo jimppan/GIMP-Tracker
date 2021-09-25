@@ -49,7 +49,7 @@ class GimpTrackerPanel extends PluginPanel
 
         container.add(plugin.getConnectButtonLabel());
         container.add(plugin.getConnectButton());
-        container.add(plugin.getDebugButton());
+        //container.add(plugin.getDebugButton());
 
         return container;
     }
