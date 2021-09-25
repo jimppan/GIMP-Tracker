@@ -3,7 +3,7 @@ This plugin tracks your movement, inventory, equipment, skills and experience an
 
 ![alt text](https://i.imgur.com/5QQoa1T.png)
 
-[Video](https://www.youtube.com/watch?v=Xqplzc1xXfQ)
+[Video](https://www.youtube.com/watch?v=aXN_TnHZUJI)
 
 ## Usage
 This plugin does nothing significant on its own, its 1 part of a 3 part system, a backend and a frontend is also required, the installation process its available under the [Wiki](https://github.com/Rachnus/GIMP-Tracker/wiki/) section of this repository 
