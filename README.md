@@ -18,7 +18,7 @@ Head over to [https://github.com/Rachnus/osrs-gimp-tracker-frontend](https://git
 ## Testing
 If you wish to test the plugin on an existing site, you may do so using my test website
 
-* Website: ![https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/](https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/)
+* Website: [https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/](https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/)
 * Runelite plugin URL setting: `https://gimptracker-backend.herokuapp.com/`
 * Runelite plugin Password setting: `password123`
 
