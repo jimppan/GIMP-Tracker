@@ -13,7 +13,10 @@ def runeLiteVersion = '1.7.24'
 
 dependencies {
 	compileOnly group: 'net.runelite', name:'client', version: runeLiteVersion
-	compile group: 'io.socket', name: 'socket.io-client', version: '2.0.1'
+	implementation('io.socket:socket.io-client:2.0.1') {
+		exclude group: 'com.squareup.okhttp3', module:'okhttp'
+	}
+
 
 	compileOnly 'org.projectlombok:lombok:1.18.20'
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
