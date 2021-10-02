@@ -35,6 +35,9 @@ On the right hand side of runelite, there will be a panel available to manually 
 
 ![alt text](https://i.imgur.com/9It7uoE.png)
 
+## Plugin hub link
+[https://runelite.net/plugin-hub/show/gimptracker](https://runelite.net/plugin-hub/show/gimptracker)
+
 ## Special thanks to
 
 - Adam, Alexsuperfly & abex @ Runelite for answering some crucial questions 
