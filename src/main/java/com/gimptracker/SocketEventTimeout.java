@@ -16,6 +16,5 @@ public class SocketEventTimeout implements Emitter.Listener
     {
         // on client timeout (5 seconds after connect by default)
         plugin.getConnectionManager().setConnectionError(ConnectionManager.ConnectionError.TIMED_OUT);
-        plugin.getConnectionManager().disconnect();
     }
 }

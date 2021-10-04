@@ -138,15 +138,33 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
 
     public void queueFullPacket()
     {
-        dataManager.getCurrentPacket().setGoalFlags(DataBuilder.DataFlags.ALL);
-
         WorldPoint point = client.getLocalPlayer().getWorldLocation();
         dataManager.getCurrentPacket().setName(client.getLocalPlayer().getName()); // NAME
-        dataManager.getCurrentPacket().setWorld(client.getWorld());
         dataManager.getCurrentPacket().setPosition(point.getX(), point.getY(), point.getPlane());  // POS
-        queueInventoryData(); // INVENTORY
-        queueSkillData(); // SKILLS
-        queueEquipmentData(); // EQUIPMENT
+
+        int flags = DataBuilder.DataFlags.POSITION | DataBuilder.DataFlags.NAME | DataBuilder.DataFlags.WORLD;
+
+        dataManager.getCurrentPacket().setWorld(client.getWorld());
+
+        if(config.sendInventory())
+        {
+            flags |= DataBuilder.DataFlags.INVENTORY;
+            queueInventoryData(); // INVENTORY
+        }
+
+        if(config.sendSkill())
+        {
+            flags |= DataBuilder.DataFlags.SKILLS;
+            queueSkillData(); // SKILLS
+        }
+
+        if(config.sendEquipment())
+        {
+            flags |= DataBuilder.DataFlags.EQUIPMENT;
+            queueEquipmentData(); // EQUIPMENT
+        }
+
+        dataManager.getCurrentPacket().setGoalFlags(flags);
     }
 
     // queues inventory data to next packet
@@ -214,7 +232,7 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         {
             case CONNECTING:
                 connectButton.setText("Connecting...");
-                connectButton.setEnabled(false);
+                connectButton.setEnabled(true);
                 break;
 
             case DISCONNECTING:
@@ -229,7 +247,11 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
 
             case DISCONNECTED:
                 connectButton.setEnabled(client.getGameState() == GameState.LOGGED_IN);
-                connectButton.setText("Connect");
+                // if we're trying to reconnect after dc
+                if(connectionManager.isConnecting())
+                    connectButton.setText("Connecting...");
+                else
+                    connectButton.setText("Connect");
                 break;
             default:
                 break;
@@ -247,6 +269,7 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
             case UNAUTHORIZED:
             case TIMED_OUT:
             case BAD_URL:
+            case LOST_CONNECTION:
                 connectButtonLabel.setForeground(Color.RED);
                 break;
         }
@@ -259,14 +282,13 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
 
         if(btn == connectButton)
         {
-            // If client presses connect
-            if(!connectionManager.isConnected())
+            if(connectionManager.isConnecting() || connectionManager.isConnected())
             {
-                connectionManager.connect();
+                connectionManager.disconnect();
             }
             else
             {
-                connectionManager.disconnect();
+                connectionManager.connect();
             }
         }
         else if(btn == debugButton)
@@ -281,18 +303,21 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
     {
         if(event.getContainerId() == InventoryID.INVENTORY.getId())
         {
-            queueInventoryData();
+            if(config.sendInventory())
+                queueInventoryData();
         }
         else if(event.getContainerId() == InventoryID.EQUIPMENT.getId())
         {
-           queueEquipmentData();
+            if(config.sendEquipment())
+                queueEquipmentData();
         }
     }
 
     @Subscribe
     public void onStatChanged(StatChanged statChanged)
     {
-        queueSkillData();
+        if(config.sendSkill())
+            queueSkillData();
     }
 
     @Subscribe
@@ -317,12 +342,6 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         previousGameState = event.getGameState();
     }
 
-    @Subscribe
-    public void onHitsplatApplied(HitsplatApplied event)
-    {
-       // System.out.println(event.getHitsplat().getAmount());
-    }
-
     public void postLogInTick()
     {
         // when user logged in lets connect to socket
@@ -342,15 +361,9 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         switch (event.getKey())
         {
             case "password":
-                connectionManager.options = IO.Options.builder().
-                        setQuery("system=runelite").
-                        setReconnection(true).
-                        setTimeout(5_000).
-                        setAuth(Collections.singletonMap("token", config.password())).
-                        build();
+                connectionManager.setSocketBuilderOptions(true, -1, config.password());
                 break;
         }
-
     }
 
     @Override
