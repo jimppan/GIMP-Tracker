@@ -24,10 +24,11 @@ If you wish to test the plugin on an existing site, you may do so using my test 
 
 ## Settings
 Heres a couple settings
-* URL: should be the IP & PORT to the back-end
-* Password: should match the password set by the backend in the `config.js` file
-* Send Data: if enabled, it will update your character on the website every tick
-* Connect on login: if enabled, it will automatically connect to the backend upon login
+* **URL**: should be the IP & PORT to the back-end
+* **Password**: should match the password set by the backend in the `config.js` file
+* **Send Data**: if enabled, it will update your character on the website every tick
+* **Connect on login**: if enabled, it will automatically connect to the backend upon login
+* **Send equipment/skill/inventory data**: if enabled, it will send updates about set data
 
 ## Status
 
