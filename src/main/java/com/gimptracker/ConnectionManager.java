@@ -42,6 +42,7 @@ public class ConnectionManager {
         UNAUTHORIZED,
         TIMED_OUT,
         BAD_URL,
+        LOST_CONNECTION,
 
         MAX,
     }
@@ -60,7 +61,8 @@ public class ConnectionManager {
             "Authorized",
             "Unauthorized",
             "Could not connect to URL",
-            "Invalid URL"
+            "Invalid URL",
+            "Lost connection"
     };
 
     public interface ConnectionListener
@@ -75,7 +77,7 @@ public class ConnectionManager {
     private SocketEventConnect socketConnectEvent;
     private SocketEventDisconnect socketDisconnectEvent;
     private SocketEventTimeout socketTimeoutEvent;
-    private SocketEventAuth socketTimeoutAuth;
+    private SocketEventAuth socketAuthEvent;
 
     public ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     public ConnectionError connectionError = ConnectionError.NONE;
@@ -124,19 +126,30 @@ public class ConnectionManager {
         socketConnectEvent = new SocketEventConnect(this.plugin);
         socketDisconnectEvent = new SocketEventDisconnect(this.plugin);
         socketTimeoutEvent = new SocketEventTimeout(this.plugin);
-        socketTimeoutAuth = new SocketEventAuth(this.plugin);
+        socketAuthEvent = new SocketEventAuth(this.plugin);
 
+        setSocketBuilderOptions(true, -1, this.plugin.getConfig().password());
+    }
+
+    public void setSocketBuilderOptions(boolean reconnect, int timeout, String password)
+    {
         options = IO.Options.builder().
                 setQuery("system=runelite").
-                setReconnection(true).
-                setTimeout(5_000).
-                setAuth(Collections.singletonMap("token", this.plugin.getConfig().password())).
+                setReconnection(reconnect).
+                setTimeout(timeout).
+                setReconnectionDelay(5_000). // attempt to reconnect every 5 seconds
+                setAuth(Collections.singletonMap("token", password)).
                 build();
     }
 
     public boolean isConnected()
     {
         return socket != null && socket.connected();
+    }
+
+    public boolean isConnecting()
+    {
+        return socket != null && socket.isActive() && !socket.connected();
     }
 
     public boolean connect()
@@ -164,7 +177,7 @@ public class ConnectionManager {
         socket.on(Socket.EVENT_CONNECT, socketConnectEvent);
         socket.on(Socket.EVENT_DISCONNECT, socketDisconnectEvent);
         socket.on(Socket.EVENT_CONNECT_ERROR, socketTimeoutEvent);
-        socket.on("authorize", socketTimeoutAuth);
+        socket.on("authorize", socketAuthEvent);
 
         socket.connect();
 
@@ -197,6 +210,7 @@ public class ConnectionManager {
 
     public void sendData(String event, JsonObject json)
     {
+
         socket.emit(event, json.toString());
         firstPacket = false;
     }

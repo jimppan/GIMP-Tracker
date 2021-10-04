@@ -19,10 +19,11 @@ public class SocketEventDisconnect implements Emitter.Listener
         // on client disconnect
         if(objects.length > 0)
         {
-            // server disconnected the socket force fully which means unauthorized
             String reason = (String)objects[0];
-            if(reason.equals("io server disconnect"))
+            if(reason.equals("io server disconnect")) // server disconnected the socket force fully which means unauthorized
                 plugin.getConnectionManager().setConnectionError(ConnectionManager.ConnectionError.UNAUTHORIZED);
+            else if(reason.equals("transport error"))  // server crashed or lost connection to the server
+                plugin.getConnectionManager().setConnectionError(ConnectionManager.ConnectionError.LOST_CONNECTION);
         }
 
         plugin.getConnectionManager().setConnectionStatus(ConnectionManager.ConnectionStatus.DISCONNECTED);
