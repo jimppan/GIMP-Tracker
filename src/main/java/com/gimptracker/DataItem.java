@@ -7,6 +7,15 @@ public class DataItem
     public int id = DataBuilder.DataInventoryID.NOT_SET;
     public int quantity = 0;
 
+    public DataItem(){
+
+    }
+
+    public DataItem(int id, int quantity){
+        this.id = id;
+        this.quantity = quantity;
+    }
+
     @Override
     public boolean equals(Object o)
     {

@@ -107,6 +107,12 @@ public class DataManager {
             }
         }
 
+        if(currentPacket.loot != null && !currentPacket.loot.equals(previousPacket.loot))
+        {
+            builder.setLoot(currentPacket.loot);
+            currentPacket.loot = null;
+        }
+
         if(builder.wasChanged)
             previousPacket = new DataBuilder(currentPacket);
 

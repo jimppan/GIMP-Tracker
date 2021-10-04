@@ -27,9 +27,10 @@ public class DataBuilder {
         public final static int HEALTH = 64;
         public final static int PRAYER = 128;
         public final static int ENERGY = 256;
+        public final static int LOOT = 512;
 
         //public final static int ALL = NAME | POSITION | INVENTORY | SKILLS | HEALTH | PRAYER | ENERGY;
-        public final static int ALL = NAME | WORLD | POSITION | INVENTORY | SKILLS | EQUIPMENT;
+        public final static int ALL = NAME | WORLD | POSITION | INVENTORY | SKILLS | EQUIPMENT; // | LOOT;
     }
 
     public final static int INVENTORY_SIZE = 28;
@@ -42,6 +43,7 @@ public class DataBuilder {
     public DataItem[] inventory = null;
     public DataSkill[] skills = null;
     public DataItem[] equipment = null;
+    public DataLoot loot = null;
 
     public JsonObject data = null;
 
@@ -78,6 +80,20 @@ public class DataBuilder {
         {
             this.equipment = new DataItem[EQUIPMENT_SIZE];
             System.arraycopy(other.equipment, 0, this.equipment, 0, other.equipment.length);
+        }
+
+        if(other.loot != null)
+        {
+            if(other.loot.items != null)
+            {
+                this.loot = new DataLoot();
+                this.loot.metadata = other.loot.metadata;
+                this.loot.combatLevel = other.loot.combatLevel;
+                this.loot.name = other.loot.name;
+                this.loot.timestamp = other.loot.timestamp;
+                this.loot.items = new DataItem[other.loot.items.length];
+                System.arraycopy(other.loot.items, 0, this.loot.items, 0, other.loot.items.length);
+            }
         }
 
         if(other.data != null)
@@ -233,6 +249,16 @@ public class DataBuilder {
         this.skills = skills;
     }
 
+    public void setLoot(DataLoot loot) {
+        setGoalProgressFlag(DataFlags.LOOT);
+
+        if(loot == null)
+            return;
+
+        wasChanged = true;
+        this.loot = loot;
+    }
+
     public JsonObject build()
     {
         data = new JsonObject();
@@ -307,6 +333,27 @@ public class DataBuilder {
 
             data.add("equipment", jsonEquipment);
         }
+
+        JsonObject jsonLoot= new JsonObject();
+        if(loot != null)
+        {
+            jsonLoot.addProperty("metadata", this.loot.metadata);
+            jsonLoot.addProperty("combatLevel", this.loot.combatLevel);
+            jsonLoot.addProperty("name", this.loot.name);
+            jsonLoot.addProperty("type", this.loot.type.name());
+            jsonLoot.addProperty("timestamp", this.loot.timestamp);
+            JsonObject jsonLootItems = new JsonObject();
+            for(int i = 0; i < this.loot.items.length; i++)
+            {
+                JsonObject jsonLootSlotData = new JsonObject();
+                jsonLootSlotData.addProperty("id", this.loot.items[i].id);
+                jsonLootSlotData.addProperty("quantity", this.loot.items[i].quantity);
+                jsonLootItems.add(String.valueOf(i), jsonLootSlotData);
+            }
+            jsonLoot.add("items", jsonLootItems);
+            data.add("loot", jsonLoot);
+        }
+
         wasChanged = false;
         return data;
     }
@@ -347,6 +394,7 @@ public class DataBuilder {
                 pos.getPlane() == other.pos.getPlane() &&
                 Arrays.equals(inventory, other.inventory) &&
                 Arrays.equals(skills, other.skills) &&
-                Arrays.equals(equipment, other.equipment);
+                Arrays.equals(equipment, other.equipment) &&
+                loot.equals(other.loot);
     }
 }
