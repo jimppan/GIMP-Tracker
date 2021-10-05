@@ -10,7 +10,7 @@ import net.runelite.api.Skill;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.net.URI;
+import java.net.uri;
 import java.util.Arrays;
 
 @Getter
@@ -107,10 +107,9 @@ public class DataManager {
             }
         }
 
-        if(currentPacket.loot != null && !currentPacket.loot.equals(previousPacket.loot))
+        if(currentPacket.loot != null && currentPacket.loot.size() > 0)
         {
             builder.setLoot(currentPacket.loot);
-            currentPacket.loot = null;
         }
 
         if(builder.wasChanged)

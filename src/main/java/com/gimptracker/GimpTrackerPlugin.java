@@ -21,7 +21,6 @@ import net.runelite.client.config.ConfigDescriptor;
 import net.runelite.client.config.ConfigItemDescriptor;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.FishingSpot;
 import net.runelite.client.game.WorldService;
 
@@ -35,32 +34,6 @@ import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.ClientToolbar;
 import net.runelite.client.util.ImageUtil;
 import net.runelite.http.api.loottracker.LootRecordType;
-import net.runelite.client.plugins.crowdsourcing.skilling.SkillingState;
-import net.runelite.client.plugins.fps.FpsConfig;
-import net.runelite.client.plugins.fps.FpsDrawListener;
-import net.runelite.client.plugins.fps.FpsOverlay;
-import net.runelite.client.plugins.friendnotes.FriendNotesConfig;
-import net.runelite.client.ui.DrawManager;
-import net.runelite.client.ui.NavigationButton;
-import net.runelite.client.ui.ClientToolbar;
-import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.util.ImageUtil;
-import net.runelite.http.api.worlds.WorldResult;
-import net.runelite.http.api.worlds.WorldType;
-
-import javax.inject.Inject;
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.time.Duration;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -70,7 +43,6 @@ import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.time.Instant;
 import java.util.Collection;
-import java.io.OutputStreamWriter;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
@@ -454,12 +426,7 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
             client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "itemID: " + item[i].id + "; quantity: " + item[i].quantity + ";", null);
         }
         loot.items = item;
-        clientThread.invokeLater(() ->
-        {
-            dataManager.getCurrentPacket().setLoot(loot);
-        });
-
-
+        dataManager.getCurrentPacket().addLoot(loot);
     }
 
     @Subscribe
