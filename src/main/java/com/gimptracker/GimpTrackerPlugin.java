@@ -1,4 +1,4 @@
-//package com.gimptracker;
+//package net.runelite.client.plugins.gimptracker;
 package com.gimptracker;
 
 import com.google.gson.*;
