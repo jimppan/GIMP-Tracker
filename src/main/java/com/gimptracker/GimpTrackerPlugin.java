@@ -60,6 +60,7 @@ import java.util.stream.Collectors;
 @Getter
 public class GimpTrackerPlugin extends Plugin implements ActionListener, ConnectionManager.ConnectionListener
 {
+    private static final String VERSION = "1.0.1";
     private static final String CONFIG_GROUP = "gimptracker";
 
     private WorldPoint previousTile = new WorldPoint(0, 0, 0);
