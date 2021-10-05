@@ -10,7 +10,7 @@ import net.runelite.api.Skill;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.net.uri;
+import java.net.URI;
 import java.util.Arrays;
 
 @Getter
