@@ -420,11 +420,7 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         Collection<DataItem> drop_items = toGameItems(items);
         DataItem item[] = drop_items.toArray(new DataItem[drop_items.size()]);
         DataLoot loot = new DataLoot((int)metadata, combatLevel, name, type, ""+Instant.now().toEpochMilli());
-        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "name: " + name + "; combatLevel: " + combatLevel + ";", null);
-        for(int i = 0; i < item.length; i++)
-        {
-            client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "itemID: " + item[i].id + "; quantity: " + item[i].quantity + ";", null);
-        }
+
         loot.items = item;
         dataManager.getCurrentPacket().addLoot(loot);
     }
@@ -432,7 +428,6 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
     @Subscribe
     public void onNpcLootReceived(final NpcLootReceived npcLootReceived)
     {
-        client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "onNpcLootDrop", null);
         final NPC npc = npcLootReceived.getNpc();
         final Collection<ItemStack> items = npcLootReceived.getItems();
         final String name = npc.getName();
@@ -444,7 +439,6 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
     @Subscribe
     public void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
     {
-
         final Player player = playerLootReceived.getPlayer();
         final Collection<ItemStack> items = playerLootReceived.getItems();
         final String name = player.getName();
