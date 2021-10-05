@@ -32,8 +32,7 @@ public class DataBuilder {
         public final static int ENERGY = 256;
         public final static int LOOT = 512;
 
-        //public final static int ALL = NAME | POSITION | INVENTORY | SKILLS | HEALTH | PRAYER | ENERGY;
-        public final static int ALL = NAME | WORLD | POSITION | INVENTORY | SKILLS | EQUIPMENT; // | LOOT;
+        public final static int ALL = NAME | WORLD | POSITION | HEALTH | PRAYER | ENERGY | INVENTORY | SKILLS | EQUIPMENT; // | LOOT;
     }
 
     public final static int INVENTORY_SIZE = 28;
@@ -47,6 +46,9 @@ public class DataBuilder {
     public DataSkill[] skills = null;
     public DataItem[] equipment = null;
     public LinkedList<DataLoot> loot = new LinkedList<DataLoot>();
+    int health = -1;
+    int prayer = -1;
+    int energy = -1;
 
     public JsonObject data = null;
 
@@ -63,6 +65,9 @@ public class DataBuilder {
 
     public DataBuilder(DataBuilder other)
     {
+        this.health = other.health;
+        this.prayer = other.prayer;
+        this.energy = other.energy;
         this.name = other.name;
         this.world = other.world;
         this.pos = other.pos;
@@ -107,6 +112,27 @@ public class DataBuilder {
             this.data = other.data.deepCopy();
 
         this.wasChanged = other.wasChanged;
+    }
+
+    public void setHealth(int health)
+    {
+        setGoalProgressFlag(DataFlags.HEALTH);
+        wasChanged = true;
+        this.health = health;
+    }
+
+    public void setPrayer(int prayer)
+    {
+        setGoalProgressFlag(DataFlags.PRAYER);
+        wasChanged = true;
+        this.prayer = prayer;
+    }
+
+    public void setEnergy(int energy)
+    {
+        setGoalProgressFlag(DataFlags.ENERGY);
+        wasChanged = true;
+        this.energy = energy;
     }
 
     public void setName(String name)
@@ -280,6 +306,15 @@ public class DataBuilder {
     {
         data = new JsonObject();
 
+        if(health != -1)
+            data.addProperty("health", health);
+
+        if(prayer != -1)
+            data.addProperty("prayer", prayer);
+
+        if(energy != -1)
+            data.addProperty("energy", energy);
+
         if(name != null)
             data.addProperty("name", name);
 
@@ -412,7 +447,10 @@ public class DataBuilder {
     public boolean equals(Object o)
     {
         DataBuilder other = (DataBuilder) o;
-        return  name.equals(other.name) &&
+        return  health == other.health &&
+                prayer == other.prayer &&
+                energy == other.energy &&
+                name.equals(other.name) &&
                 world == other.world &&
                 pos.getX() == other.pos.getX() &&
                 pos.getY() == other.pos.getY() &&

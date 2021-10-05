@@ -39,6 +39,15 @@ public class DataManager {
         if(currentPacket.name != previousPacket.name)
             builder.setName(currentPacket.name);
 
+        if(currentPacket.health != previousPacket.health)
+            builder.setHealth(currentPacket.health);
+
+        if(currentPacket.prayer != previousPacket.prayer)
+            builder.setPrayer(currentPacket.prayer);
+
+        if(currentPacket.energy != previousPacket.energy)
+            builder.setEnergy(currentPacket.energy);
+
         if(currentPacket.world != previousPacket.world)
             builder.setWorld(currentPacket.world);
 

@@ -76,4 +76,31 @@ public interface GimpTrackerConfig extends Config
             description = "Should we update our skills/experience on the GIMP Tracker website or not"
     )
     default boolean sendSkill() { return true; }
+
+    @ConfigItem
+    (
+            position = 8,
+            keyName = "sendHealth",
+            name = "Send health data",
+            description = "Should we update our health on the GIMP Tracker website or not"
+    )
+    default boolean sendHealth() { return true; }
+
+    @ConfigItem
+    (
+            position = 9,
+            keyName = "sendPrayer",
+            name = "Send prayer data",
+            description = "Should we update our prayer on the GIMP Tracker website or not"
+    )
+    default boolean sendPrayer() { return true; }
+
+    @ConfigItem
+    (
+            position = 10,
+            keyName = "sendEnergy",
+            name = "Send energy data",
+            description = "Should we update our run energy on the GIMP Tracker website or not"
+    )
+    default boolean sendEnergy() { return true; }
 }
