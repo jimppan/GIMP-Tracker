@@ -107,6 +107,11 @@ public class DataManager {
             }
         }
 
+        if(currentPacket.loot != null && currentPacket.loot.size() > 0)
+        {
+            builder.setLoot(currentPacket.loot);
+        }
+
         if(builder.wasChanged)
             previousPacket = new DataBuilder(currentPacket);
 

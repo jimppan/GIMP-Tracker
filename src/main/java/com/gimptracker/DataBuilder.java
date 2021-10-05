@@ -1,11 +1,14 @@
 package com.gimptracker;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonArray;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
 
 import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class DataBuilder {
 
@@ -27,9 +30,10 @@ public class DataBuilder {
         public final static int HEALTH = 64;
         public final static int PRAYER = 128;
         public final static int ENERGY = 256;
+        public final static int LOOT = 512;
 
         //public final static int ALL = NAME | POSITION | INVENTORY | SKILLS | HEALTH | PRAYER | ENERGY;
-        public final static int ALL = NAME | WORLD | POSITION | INVENTORY | SKILLS | EQUIPMENT;
+        public final static int ALL = NAME | WORLD | POSITION | INVENTORY | SKILLS | EQUIPMENT; // | LOOT;
     }
 
     public final static int INVENTORY_SIZE = 28;
@@ -42,6 +46,7 @@ public class DataBuilder {
     public DataItem[] inventory = null;
     public DataSkill[] skills = null;
     public DataItem[] equipment = null;
+    public LinkedList<DataLoot> loot = new LinkedList<DataLoot>();
 
     public JsonObject data = null;
 
@@ -78,6 +83,24 @@ public class DataBuilder {
         {
             this.equipment = new DataItem[EQUIPMENT_SIZE];
             System.arraycopy(other.equipment, 0, this.equipment, 0, other.equipment.length);
+        }
+
+        if(other.loot != null && other.loot.size() > 0)
+        {
+            this.loot = new LinkedList<>();
+            for(int i = 0; i < other.loot.size(); i++)
+            {
+                DataLoot otherLoot = other.loot.get(i);
+                DataLoot newLoot = new DataLoot();
+                newLoot.metadata = otherLoot.metadata;
+                newLoot.combatLevel = otherLoot.combatLevel;
+                newLoot.name = otherLoot.name;
+                newLoot.timestamp = otherLoot.timestamp;
+                newLoot.items = new DataItem[otherLoot.items.length];
+                System.arraycopy(otherLoot.items, 0, newLoot.items, 0, otherLoot.items.length);
+                this.loot.add(newLoot);
+            }
+
         }
 
         if(other.data != null)
@@ -233,6 +256,26 @@ public class DataBuilder {
         this.skills = skills;
     }
 
+    public void setLoot(LinkedList<DataLoot> loot) {
+        setGoalProgressFlag(DataFlags.LOOT);
+
+        if(loot == null)
+            return;
+
+        wasChanged = true;
+        this.loot = loot;
+    }
+
+    public void addLoot(DataLoot loot) {
+        setGoalProgressFlag(DataFlags.LOOT);
+
+        if(loot == null)
+            return;
+
+        wasChanged = true;
+        this.loot.add(loot);
+    }
+
     public JsonObject build()
     {
         data = new JsonObject();
@@ -307,6 +350,35 @@ public class DataBuilder {
 
             data.add("equipment", jsonEquipment);
         }
+
+        JsonArray jsonLootArray = new JsonArray();
+        JsonObject jsonLoot= new JsonObject();
+        long lootLength = loot.size();
+        if(loot != null && lootLength > 0)
+        {
+            for(int j = 0; j < lootLength; j++)
+            {
+                DataLoot currentLoot = loot.remove();
+                jsonLoot.addProperty("metadata", currentLoot.metadata);
+                jsonLoot.addProperty("combatLevel", currentLoot.combatLevel);
+                jsonLoot.addProperty("name", currentLoot.name);
+                jsonLoot.addProperty("type", currentLoot.type.name());
+                jsonLoot.addProperty("timestamp", currentLoot.timestamp);
+                JsonArray jsonLootItems = new JsonArray();
+                for(int i = 0; i < currentLoot.items.length; i++)
+                {
+                    JsonObject jsonLootSlotData = new JsonObject();
+                    jsonLootSlotData.addProperty("id", currentLoot.items[i].id);
+                    jsonLootSlotData.addProperty("quantity", currentLoot.items[i].quantity);
+                    jsonLootItems.add(jsonLootSlotData);
+                }
+                jsonLoot.add("items", jsonLootItems);
+                jsonLootArray.add(jsonLoot);
+            }
+
+            data.add("loot", jsonLootArray);
+        }
+
         wasChanged = false;
         return data;
     }
@@ -347,6 +419,7 @@ public class DataBuilder {
                 pos.getPlane() == other.pos.getPlane() &&
                 Arrays.equals(inventory, other.inventory) &&
                 Arrays.equals(skills, other.skills) &&
-                Arrays.equals(equipment, other.equipment);
+                Arrays.equals(equipment, other.equipment) &&
+                loot.equals(other.loot);
     }
 }

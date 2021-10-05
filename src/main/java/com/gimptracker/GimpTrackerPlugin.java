@@ -11,6 +11,7 @@ import io.socket.engineio.client.transports.Polling;
 import io.socket.engineio.client.transports.WebSocket;
 import lombok.Getter;
 import lombok.SneakyThrows;
+import lombok.NonNull;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldPoint;
@@ -20,23 +21,19 @@ import net.runelite.client.config.ConfigDescriptor;
 import net.runelite.client.config.ConfigItemDescriptor;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.game.FishingSpot;
 import net.runelite.client.game.WorldService;
+
+import net.runelite.client.events.ConfigChanged;
+import net.runelite.client.events.NpcLootReceived;
+import net.runelite.client.events.PlayerLootReceived;
+import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.plugins.crowdsourcing.skilling.SkillingState;
-import net.runelite.client.plugins.fps.FpsConfig;
-import net.runelite.client.plugins.fps.FpsDrawListener;
-import net.runelite.client.plugins.fps.FpsOverlay;
-import net.runelite.client.plugins.friendnotes.FriendNotesConfig;
-import net.runelite.client.ui.DrawManager;
 import net.runelite.client.ui.NavigationButton;
 import net.runelite.client.ui.ClientToolbar;
-import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.util.ImageUtil;
-import net.runelite.http.api.worlds.WorldResult;
-import net.runelite.http.api.worlds.WorldType;
+import net.runelite.http.api.loottracker.LootRecordType;
 
 import javax.inject.Inject;
 import javax.swing.*;
@@ -44,16 +41,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
-import java.time.Duration;
 import java.time.Instant;
-import java.io.OutputStreamWriter;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
  * Sends data to a backend which then relays it further to frontend
@@ -428,5 +419,44 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
 
         dataManager.getCurrentPacket().setPosition(currentTile.getX(), currentTile.getY(), currentTile.getPlane());
         previousTile = currentTile;
+    }
+
+    private static Collection<DataItem> toGameItems(Collection<ItemStack> items)
+    {
+        return items.stream()
+                .map(item -> new DataItem(item.getId(), item.getQuantity()))
+                .collect(Collectors.toList());
+    }
+
+    void addLoot(@NonNull String name, int combatLevel, LootRecordType type, Object metadata, Collection<ItemStack> items)
+    {
+        Collection<DataItem> drop_items = toGameItems(items);
+        DataItem item[] = drop_items.toArray(new DataItem[drop_items.size()]);
+        DataLoot loot = new DataLoot((int)metadata, combatLevel, name, type, ""+Instant.now().toEpochMilli());
+
+        loot.items = item;
+        dataManager.getCurrentPacket().addLoot(loot);
+    }
+
+    @Subscribe
+    public void onNpcLootReceived(final NpcLootReceived npcLootReceived)
+    {
+        final NPC npc = npcLootReceived.getNpc();
+        final Collection<ItemStack> items = npcLootReceived.getItems();
+        final String name = npc.getName();
+        final int combat = npc.getCombatLevel();
+
+        addLoot(name, combat, LootRecordType.NPC, npc.getId(), items);
+    }
+
+    @Subscribe
+    public void onPlayerLootReceived(final PlayerLootReceived playerLootReceived)
+    {
+        final Player player = playerLootReceived.getPlayer();
+        final Collection<ItemStack> items = playerLootReceived.getItems();
+        final String name = player.getName();
+        final int combat = player.getCombatLevel();
+
+        addLoot(name, combat, LootRecordType.PLAYER, null, items);
     }
 }
