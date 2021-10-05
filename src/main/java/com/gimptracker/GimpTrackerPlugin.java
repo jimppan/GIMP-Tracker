@@ -63,6 +63,9 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
     private static final String CONFIG_GROUP = "gimptracker";
 
     private WorldPoint previousTile = new WorldPoint(0, 0, 0);
+    private int previousHealth = 99;
+    private int previousPrayer = 99;
+    private int previousEnergy = 100;
 
     private int tickCountSinceLogged = 0;
 
@@ -133,6 +136,7 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         dataManager.getCurrentPacket().setName(client.getLocalPlayer().getName()); // NAME
         dataManager.getCurrentPacket().setPosition(point.getX(), point.getY(), point.getPlane());  // POS
 
+        // these 3 flags are mandatory, if not, you might aswell not run the plugin
         int flags = DataBuilder.DataFlags.POSITION | DataBuilder.DataFlags.NAME | DataBuilder.DataFlags.WORLD;
 
         dataManager.getCurrentPacket().setWorld(client.getWorld());
@@ -153,6 +157,26 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         {
             flags |= DataBuilder.DataFlags.EQUIPMENT;
             queueEquipmentData(); // EQUIPMENT
+        }
+
+        // a game tick should always run before we start sending packets
+        // so getting previous Health/Prayer/Energy should be safe here
+        if(config.sendHealth())
+        {
+            flags |= DataBuilder.DataFlags.HEALTH;
+            dataManager.getCurrentPacket().setHealth(previousHealth);
+        }
+
+        if(config.sendPrayer())
+        {
+            flags |= DataBuilder.DataFlags.PRAYER;
+            dataManager.getCurrentPacket().setPrayer(previousPrayer);
+        }
+
+        if(config.sendEnergy())
+        {
+            flags |= DataBuilder.DataFlags.ENERGY;
+            dataManager.getCurrentPacket().setEnergy(previousEnergy);
         }
 
         dataManager.getCurrentPacket().setGoalFlags(flags);
@@ -285,7 +309,12 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
         else if(btn == debugButton)
         {
             //client.getMap
-            System.out.println(client.getWorld());
+            //System.out.println(client.getLocalPlayer().getHealthScale());
+            //System.out.println(client.getLocalPlayer().getHealthRatio());
+
+            System.out.println(client.getBoostedSkillLevel(Skill.HITPOINTS));
+            System.out.println(client.getBoostedSkillLevel(Skill.PRAYER));
+            System.out.println(client.getEnergy());
         }
     }
 
@@ -410,15 +439,40 @@ public class GimpTrackerPlugin extends Plugin implements ActionListener, Connect
             tickCountSinceLogged++;
 
         WorldPoint currentTile = client.getLocalPlayer().getWorldLocation();
+        int currentHealth = client.getBoostedSkillLevel(Skill.HITPOINTS);
+        int currentPrayer = client.getBoostedSkillLevel(Skill.PRAYER);
+        int currentEnergy = client.getEnergy();
 
         // tile same as last time, no need to update
-        if( currentTile.getX() == previousTile.getX() &&
-            currentTile.getY() == previousTile.getY() &&
-            currentTile.getPlane() == previousTile.getPlane())
-            return;
+        if( currentTile.getX() != previousTile.getX() ||
+            currentTile.getY() != previousTile.getY() ||
+            currentTile.getPlane() != previousTile.getPlane())
+        {
+            dataManager.getCurrentPacket().setPosition(currentTile.getX(), currentTile.getY(), currentTile.getPlane());
+            previousTile = currentTile;
+        }
 
-        dataManager.getCurrentPacket().setPosition(currentTile.getX(), currentTile.getY(), currentTile.getPlane());
-        previousTile = currentTile;
+        if(currentHealth != previousHealth)
+        {
+            previousHealth = currentHealth;
+
+            if(config.sendHealth())
+                dataManager.getCurrentPacket().setHealth(currentHealth);
+        }
+
+        if(currentPrayer != previousPrayer)
+        {
+            previousPrayer = currentPrayer;
+            if(config.sendPrayer())
+                dataManager.getCurrentPacket().setPrayer(currentPrayer);
+        }
+
+        if(currentEnergy != previousEnergy)
+        {
+            previousEnergy = currentEnergy;
+            if(config.sendEnergy())
+                dataManager.getCurrentPacket().setEnergy(currentEnergy);
+        }
     }
 
     private static Collection<DataItem> toGameItems(Collection<ItemStack> items)
