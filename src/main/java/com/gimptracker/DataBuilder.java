@@ -31,8 +31,9 @@ public class DataBuilder {
         public final static int PRAYER = 128;
         public final static int ENERGY = 256;
         public final static int LOOT = 512;
+        public final static int ACCOUNT_TYPE = 1024;
 
-        public final static int ALL = NAME | WORLD | POSITION | HEALTH | PRAYER | ENERGY | INVENTORY | SKILLS | EQUIPMENT; // | LOOT;
+        public final static int ALL = NAME | WORLD | POSITION | HEALTH | PRAYER | ENERGY | INVENTORY | SKILLS | EQUIPMENT | ACCOUNT_TYPE; // | LOOT;
     }
 
     public final static int INVENTORY_SIZE = 28;
@@ -49,6 +50,7 @@ public class DataBuilder {
     int health = -1;
     int prayer = -1;
     int energy = -1;
+    int accountType = -1;
 
     public JsonObject data = null;
 
@@ -71,6 +73,7 @@ public class DataBuilder {
         this.name = other.name;
         this.world = other.world;
         this.pos = other.pos;
+        this.accountType = other.accountType;
 
         if(other.inventory != null)
         {
@@ -147,6 +150,13 @@ public class DataBuilder {
         setGoalProgressFlag(DataFlags.WORLD);
         wasChanged = true;
         this.world = world;
+    }
+
+    public void setAccountType(int accountType)
+    {
+        setGoalProgressFlag(DataFlags.ACCOUNT_TYPE);
+        wasChanged = true;
+        this.accountType = accountType;
     }
 
     public void setPosition(int x, int y, int plane)
@@ -321,6 +331,9 @@ public class DataBuilder {
         if(world != INVALID_WORLD)
             data.addProperty("world", world);
 
+        if(accountType != -1)
+            data.addProperty("accountType", accountType);
+
         if(pos != null)
         {
             JsonObject jsonPos = new JsonObject();
@@ -452,6 +465,7 @@ public class DataBuilder {
                 energy == other.energy &&
                 name.equals(other.name) &&
                 world == other.world &&
+                accountType == other.accountType &&
                 pos.getX() == other.pos.getX() &&
                 pos.getY() == other.pos.getY() &&
                 pos.getPlane() == other.pos.getPlane() &&
