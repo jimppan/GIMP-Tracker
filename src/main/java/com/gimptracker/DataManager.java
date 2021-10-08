@@ -51,6 +51,9 @@ public class DataManager {
         if(currentPacket.world != previousPacket.world)
             builder.setWorld(currentPacket.world);
 
+        if(currentPacket.accountType != previousPacket.accountType)
+            builder.setAccountType(currentPacket.accountType);
+
         if(currentPacket.pos != null && !currentPacket.pos.equals(previousPacket.pos))
             builder.setPosition(currentPacket.pos.getX(), currentPacket.pos.getY(), currentPacket.pos.getPlane());
 
