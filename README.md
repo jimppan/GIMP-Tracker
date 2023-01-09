@@ -16,11 +16,13 @@ Once you have an endpoint to connect to with the plugin, head over to the GIMP T
 Head over to [https://github.com/Rachnus/osrs-gimp-tracker-frontend](https://github.com/Rachnus/osrs-gimp-tracker-frontend) to see instructions on how to use the website
 
 ## Testing
-If you wish to test the plugin on an existing site, you may do so using my test website
+~~If you wish to test the plugin on an existing site, you may do so using my test website~~
 
-* Website: [https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/](https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/)
-* Runelite plugin URL setting: `https://gimptracker-backend.herokuapp.com/`
-* Runelite plugin Password setting: `password123`
+* ~~Website: [https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/](https://rachnus.github.io/osrs-gimp-tracker-frontend-test-site/)~~
+* ~~Runelite plugin URL setting: `https://gimptracker-backend.herokuapp.com/`~~
+* ~~Runelite plugin Password setting: `password123`~~
+
+**Heroku free tier is no longer available, so not hosting this anymore**
 
 ## Settings
 Heres a couple settings
